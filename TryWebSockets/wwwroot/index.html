@@ -1,0 +1,58 @@
+<html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <title>Net Core Web Sockets </title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+
+<body>
+    <button id="btnConnect" type="submit">Bağlan</button>
+    <br/><br> Mesaj :
+    <input id="lblMessage" style="width:300;" />
+    <br/><br>
+    <button id="btnSendMessage" type="submit">Gönder</button>
+    <br/><br>
+    <button id="btnDisconnect" type="submit">Bağlantı Kes</button>
+    <br/><br>
+    <script>
+        var btnConnect = document.getElementById("btnConnect");
+        var btnSendMessage = document.getElementById("btnSendMessage");
+        var lblMessage = document.getElementById("lblMessage");
+        var btnDisconnect = document.getElementById("btnDisconnect");
+        var socket;
+
+        btnConnect.onclick = function () {
+            socket = new WebSocket("ws://localhost:5557/WSDeneme");
+            socket.onopen = function (e) {
+                console.log("Bağlandı", e);
+            };
+            socket.onclose = function (e) {
+                console.log("Bağlantı kapandı.", e);
+            };
+            socket.onerror = function (e) {
+                console.error(e.data);
+            };
+            socket.onmessage = function (e) {
+                console.log(e.data);
+            };
+        }
+
+        btnSendMessage.onclick = function () {
+            if (!socket || socket.readyState != WebSocket.OPEN) {
+                console.error("Socket bağlı değil.");
+            }
+            var data = lblMessage.value;
+            socket.send(data);
+            console.log(data);
+        }
+
+        btnDisconnect.onclick = function () {
+            if (!socket || socket.readyState != WebSocket.OPEN) {
+                console.error("Socket bağlı değil.");
+            }
+            socket.close(1000, "Bağlantı kapatılıyor.");
+        }
+
+    </script>
+</body>
